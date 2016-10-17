@@ -74,6 +74,7 @@ CI)
         -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
         -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
         -Dsonar.github.oauth=$GITHUB_TOKEN \
+        -Dsonar.github.disableInlineComments=true \
         -Dsonar.host.url=$SONAR_HOST_URL \
         -Dsonar.login=$SONAR_TOKEN
 
