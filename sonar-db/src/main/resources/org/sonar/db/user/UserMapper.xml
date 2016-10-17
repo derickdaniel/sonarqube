@@ -236,8 +236,22 @@
 
   <update id="updateRootUser">
     update users u set
-      is_root = true,
+      is_root = ${_true},
       updated_at = #{now,jdbcType=BIGINT}
+    where
+      u.login = #{login,jdbcType=VARCHAR}
+      and exists (
+        <include refid="userPermissionAdminInDefaultOrganizationForUser"/>
+        union
+        <include refid="groupPermissionAdminInDefaultOrganizationForUser"/>
+      )
+  </update>
+
+  <update id="updateRootUser" databaseId="mssql">
+    update u set
+      is_root = ${_true},
+      updated_at = #{now,jdbcType=BIGINT}
+    from users u
     where
       u.login = #{login,jdbcType=VARCHAR}
       and exists (
@@ -249,8 +263,22 @@
 
   <update id="updateNonRootUser">
     update users u set
-      is_root = false,
+      is_root = ${_false},
       updated_at = #{now,jdbcType=BIGINT}
+    where
+      u.login = #{login,jdbcType=VARCHAR}
+      and not exists (
+        <include refid="userPermissionAdminInDefaultOrganizationForUser"/>
+        union
+        <include refid="groupPermissionAdminInDefaultOrganizationForUser"/>
+      )
+  </update>
+
+  <update id="updateNonRootUser" databaseId="mssql">
+    update u set
+      is_root = ${_false},
+      updated_at = #{now,jdbcType=BIGINT}
+    from users u
     where
       u.login = #{login,jdbcType=VARCHAR}
       and not exists (

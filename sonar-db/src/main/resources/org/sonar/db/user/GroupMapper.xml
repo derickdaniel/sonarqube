@@ -120,8 +120,22 @@
 
   <update id="updateRootUsersOfGroup">
     update users u set
-      is_root = true,
+      is_root = ${_true},
       updated_at = #{now,jdbcType=BIGINT}
+    where
+      u.id in (<include refid="userIdsForGroupId"/>)
+      and exists (
+        <include refid="userPermissionAdminInDefaultOrganizationForUser"/>
+        union
+        <include refid="groupPermissionAdminInDefaultOrganizationForUser"/>
+      )
+  </update>
+
+  <update id="updateRootUsersOfGroup" databaseId="mssql">
+    update u set
+      is_root = ${_true},
+      updated_at = #{now,jdbcType=BIGINT}
+    from users u
     where
       u.id in (<include refid="userIdsForGroupId"/>)
       and exists (
@@ -133,8 +147,22 @@
 
   <update id="updateNonRootUsersOfGroup">
     update users u set
-      is_root = false,
+      is_root = ${_false},
       updated_at = #{now,jdbcType=BIGINT}
+    where
+      u.id in (<include refid="userIdsForGroupId"/>)
+      and not exists (
+        <include refid="userPermissionAdminInDefaultOrganizationForUser"/>
+        union
+        <include refid="groupPermissionAdminInDefaultOrganizationForUser"/>
+      )
+  </update>
+
+  <update id="updateNonRootUsersOfGroup" databaseId="mssql">
+    update u set
+      is_root = ${_false},
+      updated_at = #{now,jdbcType=BIGINT}
+    from users u
     where
       u.id in (<include refid="userIdsForGroupId"/>)
       and not exists (
