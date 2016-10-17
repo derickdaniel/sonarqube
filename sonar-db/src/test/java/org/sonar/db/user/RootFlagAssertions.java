@@ -53,4 +53,10 @@ public class RootFlagAssertions {
       .as("UpdatedAt of user '%s' has changed since insertion", userDto.getLogin())
       .isNotEqualTo(userDto);
   }
+
+  public void verify(String login, boolean root) {
+    assertThat(db.getDbClient().userDao().selectByLogin(db.getSession(), login).isRoot())
+      .as("Root flag of user '%s' is '%s'", login, root)
+      .isEqualTo(root);
+  }
 }
